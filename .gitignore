@@ -2,7 +2,18 @@
 .import/
 export.cfg
 export_presets.cfg
+
+# Godot 4+ specific ignores
 .godot/
+
+# Ignore Export build results
+Exports/
+*.exe
+*.pck
+
+# Ignore temporary files
+*.tmp
+**/~*
 
 # Imported translations (automatically generated from CSV files)
 *.translation
