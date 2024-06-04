@@ -8,6 +8,7 @@ export_presets.cfg
 
 # Ignore Export build results
 Exports/
+Export/
 *.exe
 *.pck
 
