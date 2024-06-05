@@ -6,8 +6,6 @@ static var current_point:ConnectablePoint
 
 var next_points:Array[ConnectablePoint]
 
-var is_first_point:bool = false
-
 @export
 var radius:float = 25
 @export
