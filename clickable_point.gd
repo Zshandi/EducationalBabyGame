@@ -1,5 +1,5 @@
 @tool
-extends Area2D
+extends Node2D
 class_name ClickablePoint
 
 static var current_point:ClickablePoint
@@ -12,13 +12,7 @@ var is_first_point:bool = false
 var clickable_radius:float = 45
 
 @export
-var radius:float = 25:
-	get:
-		return radius
-	set(value):
-		radius = value
-		if shape != null:
-			shape.radius = value
+var radius:float = 25
 
 @export
 var radius_hover:float = 30
@@ -31,9 +25,6 @@ var color:Color = Color.WHITE
 @export
 var line_width:float = 25
 
-@onready
-var shape:CircleShape2D = $PointCollision.shape
-
 var is_cursor_over:bool = false
 
 var is_pressed:bool = false
@@ -41,9 +32,6 @@ var is_pressed:bool = false
 var is_anywhere_pressed:bool = false
 
 var cursor_position:Vector2
-
-func _ready():
-	shape.radius = radius
 
 func _process(delta):
 	

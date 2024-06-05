@@ -8,30 +8,18 @@ script = ExtResource("1_g6kha")
 
 [node name="ClickablePoint2" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(514, 277)
-radius_hover = null
-radius_pressed = null
 
 [node name="ClickablePoint3" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(150, 280)
-radius_hover = null
-radius_pressed = null
 
 [node name="ClickablePoint4" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(325, 184)
-radius_hover = null
-radius_pressed = null
 
 [node name="ClickablePoint5" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(516, 447)
-radius_hover = null
-radius_pressed = null
 
 [node name="ClickablePoint6" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(148, 450)
-radius_hover = null
-radius_pressed = null
 
 [node name="ClickablePoint7" parent="." instance=ExtResource("2_26n3l")]
 position = Vector2(333, 573)
-radius_hover = null
-radius_pressed = null
