@@ -2,71 +2,21 @@
 extends Node2D
 class_name ClickablePoint
 
-static var current_point:ClickablePoint
-
-var next_points:Array[ClickablePoint]
-
-var is_first_point:bool = false
-
 @export
 var clickable_radius:float = 45
 
-@export
-var radius:float = 25
-
-@export
-var radius_hover:float = 30
-@export
-var radius_pressed:float = 45
-
-@export
-var color:Color = Color.WHITE
-
-@export
-var line_width:float = 25
-
+## Whether the cursor is over the point (regardless if pressed or not)
 var is_cursor_over:bool = false
 
+## Set to true when the point is pressed on, then false once released
+## This will still be true if dragged off of the point
 var is_pressed:bool = false
 
+## Set to true if anywhere on the screen is pressed (over or off of the point)
 var is_anywhere_pressed:bool = false
 
+## Set to current cursor position
 var cursor_position:Vector2
-
-func _process(delta):
-	
-	if !is_anywhere_pressed:
-		current_point = null
-		next_points = []
-	
-	if is_cursor_over && (is_pressed || is_anywhere_pressed):
-		if current_point == null:
-			current_point = self
-			Input.vibrate_handheld()
-		elif current_point != self:
-			# Ensure we don't have double-lines
-			if !current_point.next_points.has(self) && !next_points.has(current_point):
-				current_point.next_points.push_back(self)
-				current_point = self
-				Input.vibrate_handheld()
-	
-	queue_redraw()
-
-func _draw():
-	var final_radius := radius
-	
-	if current_point == self || !next_points.is_empty():
-		final_radius = radius_pressed
-	elif is_cursor_over:
-		final_radius = radius_hover
-	
-	if current_point == self:
-		draw_line(Vector2.ZERO, to_local(cursor_position), color, line_width)
-	
-	for point in next_points:
-		draw_line(Vector2.ZERO, to_local(point.global_position), color, line_width)
-	
-	draw_circle(Vector2.ZERO, final_radius, color)
 
 func process_input_event(event:InputEvent, is_on_point:bool):
 	var is_left_click = event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT
@@ -101,7 +51,7 @@ func process_input_event(event:InputEvent, is_on_point:bool):
 	if is_mouse_motion || is_drag || is_touch:
 		cursor_position = event.position
 
-func _input(event):
+func _unhandled_input(event):
 	var is_on_point := false
 	if "position" in event:
 		is_on_point = event.position.distance_to(global_position) < clickable_radius
