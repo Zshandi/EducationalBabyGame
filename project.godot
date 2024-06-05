@@ -19,7 +19,10 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=648
 window/size/viewport_height=1152
+window/size/window_width_override=324
+window/size/window_height_override=576
 window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 window/handheld/orientation=5
 
 [input]

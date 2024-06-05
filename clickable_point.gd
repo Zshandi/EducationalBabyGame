@@ -21,9 +21,9 @@ var radius:float = 25:
 			shape.radius = value
 
 @export
-var radiusHover:float = 30
+var radius_hover:float = 30
 @export
-var radiusPressed:float = 45
+var radius_pressed:float = 45
 
 @export
 var color:Color = Color.WHITE
@@ -34,11 +34,11 @@ var line_width:float = 25
 @onready
 var shape:CircleShape2D = $PointCollision.shape
 
-var is_hover:bool = false
+var is_cursor_over:bool = false
 
 var is_pressed:bool = false
 
-var is_any_pressed:bool = false
+var is_anywhere_pressed:bool = false
 
 var cursor_position:Vector2
 
@@ -47,11 +47,11 @@ func _ready():
 
 func _process(delta):
 	
-	if !is_any_pressed:
+	if !is_anywhere_pressed:
 		current_point = null
 		next_points = []
 	
-	if is_hover && (is_pressed || is_any_pressed):
+	if is_cursor_over && (is_pressed || is_anywhere_pressed):
 		if current_point == null:
 			current_point = self
 			Input.vibrate_handheld()
@@ -65,12 +65,12 @@ func _process(delta):
 	queue_redraw()
 
 func _draw():
-	var finalRadius := radius
+	var final_radius := radius
 	
 	if current_point == self || !next_points.is_empty():
-		finalRadius = radiusPressed
-	elif is_hover:
-		finalRadius = radiusHover
+		final_radius = radius_pressed
+	elif is_cursor_over:
+		final_radius = radius_hover
 	
 	if current_point == self:
 		draw_line(Vector2.ZERO, to_local(cursor_position), color, line_width)
@@ -78,7 +78,7 @@ func _draw():
 	for point in next_points:
 		draw_line(Vector2.ZERO, to_local(point.global_position), color, line_width)
 	
-	draw_circle(Vector2.ZERO, finalRadius, color)
+	draw_circle(Vector2.ZERO, final_radius, color)
 
 func process_input_event(event:InputEvent, is_on_point:bool):
 	var is_left_click = event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT
@@ -90,10 +90,10 @@ func process_input_event(event:InputEvent, is_on_point:bool):
 	# For simple press & release, touch and mouse are identical
 	if is_touch || is_left_click:
 		if event.is_released():
-			is_any_pressed = false
+			is_anywhere_pressed = false
 			is_pressed = false
 		elif event.is_pressed():
-			is_any_pressed = true
+			is_anywhere_pressed = true
 			if is_on_point:
 				is_pressed = true
 	
@@ -101,12 +101,13 @@ func process_input_event(event:InputEvent, is_on_point:bool):
 	# (finger on screen while over the point)
 	if is_touch && is_on_point:
 		if event.is_released():
-			is_hover = false
+			is_cursor_over = false
 		elif event.is_pressed():
-			is_hover = true
+			is_cursor_over = true
 	
-	if is_drag:
-		is_hover = is_on_point
+	# Process "hover" for touch or mouse
+	if is_drag || is_mouse_motion:
+		is_cursor_over = is_on_point
 	
 	# Update cursor position
 	if is_mouse_motion || is_drag || is_touch:
@@ -117,9 +118,3 @@ func _input(event):
 	if "position" in event:
 		is_on_point = event.position.distance_to(global_position) < clickable_radius
 	process_input_event(event, is_on_point)
-
-func _on_mouse_entered():
-	is_hover = true
-
-func _on_mouse_exited():
-	is_hover = false
