@@ -18,6 +18,9 @@ var is_anywhere_pressed:bool = false
 ## Set to current cursor position
 var cursor_position:Vector2
 
+func _ready():
+	pass#Main.instance.touch_event.connect()
+
 func process_input_event(event:InputEvent, is_on_point:bool):
 	var is_left_click = event is InputEventMouseButton && event.button_index == MOUSE_BUTTON_LEFT
 	var is_touch = event is InputEventScreenTouch
@@ -55,4 +58,12 @@ func _unhandled_input(event):
 	var is_on_point := false
 	if "position" in event:
 		is_on_point = event.position.distance_to(global_position) < clickable_radius
+	
+	if "index" in event && event.index != 0:
+		# We only want touch from the first finger that contacts the screen
+		return
+	
 	process_input_event(event, is_on_point)
+
+func _main_touch_event(event, touch_state):
+	pass
