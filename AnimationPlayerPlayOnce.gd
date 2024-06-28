@@ -1,3 +1,4 @@
+@tool
 extends AnimationPlayer
 class_name AnimationPlayerPlayOnce
 

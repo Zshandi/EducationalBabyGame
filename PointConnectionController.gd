@@ -1,16 +1,28 @@
 extends Node2D
 
+var points:Array[ConnectablePoint] = []
+var connected_points:Array[ConnectablePoint] = []
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	for child in get_children():
+		if child is ConnectablePoint:
+			points.push_back(child)
 
+func clear_points():
+	connected_points.clear()
+	for point in points:
+		point.is_connected = false
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
-
-func _on_touch_input_primary_touch_event(event, longest_touched_point):
+func _on_touch_input_primary_touch_event(event:, longest_touched_point):
+	if longest_touched_point == null:
+		clear_points()
+		return
 	
-	pass # Replace with function body.
+	for point in points:
+		if point.is_connected:
+			continue
+		
+		if point.is_pressed(longest_touched_point.position):
+			connected_points.push_back(point)
+			point.is_connected = true
+			break
