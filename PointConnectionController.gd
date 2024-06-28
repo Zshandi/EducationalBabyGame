@@ -9,3 +9,8 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func _on_touch_input_primary_touch_event(event, longest_touched_point):
+	
+	pass # Replace with function body.

@@ -1,76 +1,30 @@
 @tool
-extends ClickablePoint
+extends Area2D
 class_name ConnectablePoint
 
-static var current_point:ConnectablePoint
+var is_connected := false
 
-var next_points:Array[ConnectablePoint]
+var is_hover := false
 
-@export
-var radius:float = 25
-@export
-var radius_hover:float = 30
-@export
-var radius_pressed:float = 45
-
-@export
-var color:Color = Color.WHITE
-
-@export
-var line_width:float = 25
-
-func process_pressed(position:Vector2) -> bool:
-	return false
+func is_pressed(position:Vector2) -> bool:
+	# Dev Note: Assumes the collision shape is just a circle
+	var dist_sq = position.distance_squared_to($CollisionShape2D.global_position)
+	var radius_sq = $CollisionShape2D.shape.radius * $CollisionShape2D.shape.radius
+	return dist_sq < radius_sq
 
 func _ready():
-	$AnimationPlayer.play("idle")
-
-var was_hover := false
-
-var was_pressed = false
+	$AnimationPlayer.play_once("idle")
 
 func _process(delta):
-	if is_pressed && !was_pressed:
-		$AnimationPlayer.play("click")
-	elif is_cursor_over && !was_hover:
-		$AnimationPlayer.play("hover")
-		was_hover = true
-	elif !is_cursor_over && was_hover:
-		$AnimationPlayer.play("idle")
-		was_hover = false
-	
-	was_pressed = is_pressed
-	
-	if !is_anywhere_pressed:
-		current_point = null
-		next_points = []
-	
-	if is_cursor_over && is_anywhere_pressed:
-		if current_point == null:
-			current_point = self
-			Input.vibrate_handheld()
-		elif current_point != self:
-			# Ensure we don't have double-lines
-			if !current_point.next_points.has(self) && !next_points.has(current_point):
-				current_point.next_points.push_back(self)
-				current_point = self
-				Input.vibrate_handheld()
-	
-	#queue_redraw()
+	if is_connected:
+		$AnimationPlayer.play_once("click")
+	elif is_hover:
+		$AnimationPlayer.play_once("hover")
+	else:
+		$AnimationPlayer.play_once("idle")
 
-func _draw():
-	return
-	var final_radius := radius
-	
-	if current_point == self || !next_points.is_empty():
-		final_radius = radius_pressed
-	elif is_cursor_over:
-		final_radius = radius_hover
-	
-	if current_point == self:
-		draw_line(Vector2.ZERO, to_local(cursor_position), color, line_width)
-	
-	for point in next_points:
-		draw_line(Vector2.ZERO, to_local(point.global_position), color, line_width)
-	
-	draw_circle(Vector2.ZERO, final_radius, color)
+func _on_mouse_entered():
+	is_hover = true
+
+func _on_mouse_exited():
+	is_hover = false
