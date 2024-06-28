@@ -14,5 +14,8 @@ func _process(delta):
 func _draw():
 	draw_circle(Vector2.ZERO, radius, color)
 
-static func create(radius:float = 1, color:Color = Color.WHITE) -> DrawnCircle:
-	return load("res://Primitives/drawn_circle.tscn").instantiate()
+static func create(radius:float = 1.0, color:Color = Color.WHITE) -> DrawnCircle:
+	var result:DrawnCircle = load("res://Primitives/drawn_circle.tscn").instantiate()
+	result.color = color
+	result.radius = radius
+	return result

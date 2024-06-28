@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://shiolnr8tdhh"]
+
+[ext_resource type="Script" path="res://Primitives/DrawnLine.gd" id="1_5aa4a"]
+
+[node name="DrawnLine" type="Node2D"]
+script = ExtResource("1_5aa4a")
+width = 1.0
