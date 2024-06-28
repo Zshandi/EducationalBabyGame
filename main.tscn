@@ -14,6 +14,8 @@ script = ExtResource("3_eltub")
 [node name="PointConnectionController" type="Node2D" parent="."]
 script = ExtResource("4_bk5ck")
 
+[node name="LineContainer" type="Node2D" parent="PointConnectionController"]
+
 [node name="ClickablePoint2" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
 position = Vector2(124, 111)
 
