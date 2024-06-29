@@ -1,25 +1,46 @@
-[gd_scene load_steps=3 format=3 uid="uid://bpige2v22spas"]
+[gd_scene load_steps=5 format=3 uid="uid://bpige2v22spas"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_g6kha"]
-[ext_resource type="PackedScene" uid="uid://c3b5k3xn3rgeq" path="res://clickable_point.tscn" id="2_26n3l"]
+[ext_resource type="PackedScene" uid="uid://c3b5k3xn3rgeq" path="res://connectable_point.tscn" id="2_26n3l"]
+[ext_resource type="Script" path="res://TouchInput.gd" id="3_eltub"]
+[ext_resource type="Script" path="res://PointConnectionController.gd" id="4_bk5ck"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_g6kha")
 
-[node name="ClickablePoint2" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(514, 277)
+[node name="TouchInput" type="Node" parent="."]
+script = ExtResource("3_eltub")
 
-[node name="ClickablePoint3" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(150, 280)
+[node name="PointConnectionController" type="Node2D" parent="."]
+script = ExtResource("4_bk5ck")
 
-[node name="ClickablePoint4" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(325, 184)
+[node name="LineContainer" type="Node2D" parent="PointConnectionController"]
 
-[node name="ClickablePoint5" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(516, 447)
+[node name="ClickablePoint2" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(124, 111)
 
-[node name="ClickablePoint6" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(148, 450)
+[node name="ClickablePoint3" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(324, 110)
 
-[node name="ClickablePoint7" parent="." instance=ExtResource("2_26n3l")]
-position = Vector2(333, 573)
+[node name="ClickablePoint4" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(524, 110)
+
+[node name="ClickablePoint5" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(124, 310)
+
+[node name="ClickablePoint6" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(324, 309)
+
+[node name="ClickablePoint7" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(524, 309)
+
+[node name="ClickablePoint8" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(124, 510)
+
+[node name="ClickablePoint9" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(324, 509)
+
+[node name="ClickablePoint10" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
+position = Vector2(524, 509)
+
+[connection signal="primary_touch_event" from="TouchInput" to="PointConnectionController" method="_on_touch_input_primary_touch_event"]

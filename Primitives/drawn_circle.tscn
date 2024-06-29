@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgsvcpjhwnsnc"]
+
+[ext_resource type="Script" path="res://Primitives/DrawnCircle.gd" id="1_khtwg"]
+
+[node name="DrawnCircle" type="Node2D"]
+script = ExtResource("1_khtwg")

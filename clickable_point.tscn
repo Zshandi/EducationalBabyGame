@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c3b5k3xn3rgeq"]
-
-[ext_resource type="Script" path="res://connectable_point.gd" id="1_7g0ij"]
-
-[node name="ClickablePoint" type="Node2D"]
-script = ExtResource("1_7g0ij")
