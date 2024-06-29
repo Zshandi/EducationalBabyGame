@@ -43,7 +43,7 @@ func _on_touch_input_primary_touch_event(event:, longest_touched_point):
 		current_line.to = longest_touched_point.position
 
 func add_line(from:Vector2) -> DrawnLine:
-	var line = DrawnLine.create(from, Vector2.ZERO, 10, Color.WHITE, true)
+	var line = DrawnLine.create(from, Vector2.ZERO, 20, Color.WHITE, true)
 	line.owner = owner
 	line_container.add_child(line)
 	return line

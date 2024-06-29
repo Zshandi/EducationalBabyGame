@@ -17,30 +17,30 @@ script = ExtResource("4_bk5ck")
 [node name="LineContainer" type="Node2D" parent="PointConnectionController"]
 
 [node name="ClickablePoint2" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(124, 111)
+position = Vector2(124, 260)
 
 [node name="ClickablePoint3" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(324, 110)
+position = Vector2(324, 259)
 
 [node name="ClickablePoint4" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(524, 110)
+position = Vector2(524, 259)
 
 [node name="ClickablePoint5" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(124, 310)
+position = Vector2(124, 459)
 
 [node name="ClickablePoint6" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(324, 309)
+position = Vector2(324, 458)
 
 [node name="ClickablePoint7" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(524, 309)
+position = Vector2(524, 458)
 
 [node name="ClickablePoint8" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(124, 510)
+position = Vector2(124, 659)
 
 [node name="ClickablePoint9" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(324, 509)
+position = Vector2(324, 658)
 
 [node name="ClickablePoint10" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
-position = Vector2(524, 509)
+position = Vector2(524, 658)
 
 [connection signal="primary_touch_event" from="TouchInput" to="PointConnectionController" method="_on_touch_input_primary_touch_event"]
