@@ -35,15 +35,15 @@ func _on_touch_input_primary_touch_event(event:, longest_touched_point):
 			connected_points.push_back(point)
 			point.is_connected = true
 			if current_line != null:
-				current_line.to_point = point.position
+				current_line.to = point.position
 			current_line = add_line(point.position)
 			break
 	
 	if current_line != null:
-		current_line.to_point = longest_touched_point.position
+		current_line.to = longest_touched_point.position
 
-func add_line(from_point:Vector2) -> DrawnLine:
-	var line = DrawnLine.create(from_point, Vector2.ZERO, 10)
+func add_line(from:Vector2) -> DrawnLine:
+	var line = DrawnLine.create(from, Vector2.ZERO, 10, Color.WHITE, true)
 	line.owner = owner
 	line_container.add_child(line)
 	return line
