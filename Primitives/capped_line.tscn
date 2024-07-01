@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://cluxu507mwpab"]
+
+[ext_resource type="Script" path="res://Primitives/CappedLine.gd" id="1_y53rc"]
+[ext_resource type="PackedScene" uid="uid://cgsvcpjhwnsnc" path="res://Primitives/drawn_circle.tscn" id="2_ejwbd"]
+
+[node name="CappedLine" type="Node2D"]
+script = ExtResource("1_y53rc")
+
+[node name="DrawnCircleFrom" parent="." instance=ExtResource("2_ejwbd")]
+radius = -0.5
+
+[node name="DrawnCircleTo" parent="." instance=ExtResource("2_ejwbd")]
+radius = -0.5

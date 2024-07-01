@@ -1,4 +1,4 @@
-@tool
+#@tool
 extends Area2D
 class_name ConnectablePoint
 
@@ -16,6 +16,10 @@ func is_pressed(position:Vector2) -> bool:
 	var dist_sq = position.distance_squared_to(global_position)
 	var radius_sq = collision_circle.radius * collision_circle.radius
 	return dist_sq < radius_sq
+
+func reset():
+	is_connected = false
+	anim_player.play("idle")
 
 func _ready():
 	anim_player.play_once("idle")

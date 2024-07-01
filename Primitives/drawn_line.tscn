@@ -4,7 +4,4 @@
 
 [node name="DrawnLine" type="Node2D"]
 script = ExtResource("1_5aa4a")
-from = null
-to = null
 width = 1.0
-antialiased = null
