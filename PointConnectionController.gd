@@ -39,35 +39,43 @@ func complete_shape(point:ConnectablePoint):
 		connected_points.pop_front()
 		connected_lines.pop_front()
 	
-	var tween = create_tween().set_parallel(true)
+	var tween = create_tween()
 	
 	# Hide all points
 	for point_i in points:
-		tween.tween_property(point_i, "modulate", Color.TRANSPARENT, 1)
+		tween.parallel().tween_property(point_i, "modulate", Color.TRANSPARENT, 1)
 	# Once hidden, each one should be reset
-	tween.set_parallel(false)
 	tween.tween_callback(
 		func ():
-			print_debug("points hidden")
 			for point_i in points:
 				point_i.reset()
 	)
-	tween.set_parallel(true)
 	
 	# Animate the lines
 	for line in connected_lines:
-		tween.tween_property(line, "width", line.width + 10, 3).set_trans(Tween.TRANS_SPRING)
-		tween.tween_property(line, "color", Color.RED, 2).set_trans(Tween.TRANS_CUBIC)
+		tween.parallel().tween_property(line, "width", line.width + 10, 3).set_trans(Tween.TRANS_SPRING)
+		tween.parallel().tween_property(line, "color", Color.RED, 2).set_trans(Tween.TRANS_CUBIC)
 	
 	# Wait for all animations to complete, then delay and call back to done
-	tween.set_parallel(false)
 	tween.tween_interval(2)
+	
+	# Hide lines and reveal points
+	tween.tween_property($LineContainer, "self_modulate", Color.TRANSPARENT, 1)
+	tween.tween_interval(0.1)
+	for point_i in points:
+		tween.parallel().tween_property(point_i, "modulate", Color.WHITE, 1)
+	
+	# Finally, reset
 	tween.tween_callback(
 		func ():
-			print_debug("Tween done!")
-			for point_i in points:
-				point_i.modulate = Color.WHITE
 			clear()
+	)
+	# Wait a split second before revealing the lines again
+	# Otherwise, the lines will flash back on screen quickly
+	tween.tween_interval(0.05)
+	tween.tween_callback(
+		func ():
+			$LineContainer.self_modulate = Color.WHITE
 			completing_shape = false
 	)
 
