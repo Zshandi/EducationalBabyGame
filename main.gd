@@ -10,25 +10,27 @@ func _init():
 
 func _ready():
 	pass
-	#for i in range(0, 25):
+	#for i in range(-12, 13):
 		#play_note(i)
 		#await $AudioStreamPlayer.finished
 
-func play_note(step:int):
-	var pitch_semitone = step
-	var pitch_scale = get_pitch_scale_for(pitch_semitone)
+func play_note(pitch_semitone:int):
+	var pitch_scale = get_pitch_scale_for(pitch_semitone-12)
 	
 	adjust_pitch_scale($AudioStreamPlayer, pitch_scale)
 	$AudioStreamPlayer.play()
 
+func play_finish():
+	var random_semitone = randi_range(-10, 10)
+	var pitch_scale = get_pitch_scale_for(random_semitone)
+	adjust_pitch_scale($AudioStreamPlayerFinish, pitch_scale, 0.9)
+	$AudioStreamPlayerFinish.play()
 
 ## Adjust pitch by total [param pitch_scale] of both the given [param stream_player] and
 ##  audio bus [param effect], with the given [param stream_to_effect_ratio].
 ## 
 ## If [param stream_to_effect_ratio] is 0, it will be only adjusted on the [param stream_player],
 ##  if it's 1, only on the bus [param effect], and anything in-between is a mix of both.
-## 
-## 
 ## 
 ## The purpose of this method is to provide a balance between
 ##  scaling pitch by speeding it up (via stream) vs not (via bus effect).
@@ -45,8 +47,8 @@ func adjust_pitch_scale(stream_player:AudioStreamPlayer, pitch_scale:float,
 	# Find octave shift with base 2 log
 	var octaves = log(pitch_scale) / log(2)
 	# Divide the octaves between the scales based on ratio
-	var stream_octaves = octaves * stream_to_effect_ratio
-	var effect_octaves = octaves - stream_octaves
+	var effect_octaves = octaves * stream_to_effect_ratio
+	var stream_octaves = octaves - effect_octaves
 	# Convert octaves back to pitch scale
 	var stream_pitch = pow(2, stream_octaves)
 	var effect_pitch = pow(2, effect_octaves)

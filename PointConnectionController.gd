@@ -50,6 +50,8 @@ func complete_shape(point:ConnectablePoint):
 		func ():
 			for point_i in points:
 				point_i.reset()
+			# Also play the finished sound
+			Main.instance.play_finish()
 	)
 	
 	# Animate the lines
