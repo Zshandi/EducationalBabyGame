@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://bpige2v22spas"]
+[gd_scene load_steps=7 format=3 uid="uid://bpige2v22spas"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_g6kha"]
 [ext_resource type="PackedScene" uid="uid://c3b5k3xn3rgeq" path="res://connectable_point.tscn" id="2_26n3l"]
 [ext_resource type="Script" path="res://TouchInput.gd" id="3_eltub"]
 [ext_resource type="Script" path="res://PointConnectionController.gd" id="4_bk5ck"]
+[ext_resource type="AudioStream" uid="uid://bouilptagpe2d" path="res://PianoNoteC6.mp3" id="5_75nxc"]
+[ext_resource type="AudioStream" uid="uid://d2hjgam31gwjj" path="res://PianoFinish.mp3" id="6_r6wd1"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_g6kha")
@@ -42,5 +44,14 @@ position = Vector2(324, 658)
 
 [node name="ClickablePoint10" parent="PointConnectionController" instance=ExtResource("2_26n3l")]
 position = Vector2(524, 658)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_75nxc")
+bus = &"Notes"
+
+[node name="AudioStreamPlayerFinish" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_r6wd1")
+volume_db = -2.0
+bus = &"Finish"
 
 [connection signal="primary_touch_event" from="TouchInput" to="PointConnectionController" method="_on_touch_input_primary_touch_event"]

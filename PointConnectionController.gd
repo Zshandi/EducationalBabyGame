@@ -28,6 +28,7 @@ func clear():
 
 func complete_shape(point:ConnectablePoint):
 	completing_shape = true
+	Main.instance.play_note(connected_points.size()+1)
 	
 	# Connect the current line to the point
 	current_line.to = point.global_position
@@ -49,6 +50,8 @@ func complete_shape(point:ConnectablePoint):
 		func ():
 			for point_i in points:
 				point_i.reset()
+			# Also play the finished sound
+			Main.instance.play_finish()
 	)
 	
 	# Animate the lines
@@ -121,6 +124,7 @@ func connect_point(point:ConnectablePoint):
 		current_line.to = point.position
 	current_line = add_line(point.position)
 	connected_lines.push_back(current_line)
+	Main.instance.play_note(connected_points.size())
 
 func add_line(from:Vector2) -> CappedLine:
 	var line = CappedLine.create(from, Vector2.ZERO, 30, Color.WHITE, true)
