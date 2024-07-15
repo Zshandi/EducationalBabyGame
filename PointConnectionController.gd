@@ -128,24 +128,37 @@ func try_connect_point(point:ConnectablePoint) -> bool:
 	
 	# Only forms a line if there are already points
 	if !connected_points.is_empty():
+		# From last connected point
 		var from = connected_points[-1].global_position
+		# To new point (attempting to be connected)
 		var to = point.global_position
 		var line = create_line_collision(from, to)
+		# Keep track of actual ConnectablePoints rather than the collision points
 		var hit_points := []
 		for point_collision in point_collisions:
 			if line.shape.collide(line.transform, point_collision.shape, point_collision.transform):
 				var index = point_collisions.find(point_collision)
 				hit_points.push_back(points[index])
 		
+		# In case we have multiple, sort by distance (squared for efficiency)
+		hit_points.sort_custom(
+			func(a,b):
+				return a.position.distance_squared_to(from) < b.position.distance_squared_to(from)
+		)
+		
+		# If any point can't be connected, the line cannot be drawn here
 		for hit_point in hit_points:
 			if !can_connect_point(hit_point):
 				return false
 		
+		# Connect all the points in turn
 		for hit_point in hit_points:
 			connect_point(hit_point)
+			# Make sure we stop connecting as soon as the shape is completed
 			if completing_shape:
 				return true
 	
+	# Finally, connect the actual intended point
 	connect_point(point)
 	return true
 
@@ -171,6 +184,8 @@ func add_line(from:Vector2) -> CappedLine:
 	return line
 
 ## Arbitrarily small value for collisions
+##  Note that this had to be at least 2, otherwise
+##  diagonals did not detect properly
 const epsilon := 2
 
 ## Creates a point collision shape which is arbitrarily small
