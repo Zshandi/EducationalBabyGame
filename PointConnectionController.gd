@@ -186,7 +186,7 @@ func add_line(from:Vector2) -> CappedLine:
 ## Arbitrarily small value for collisions
 ##  Note that this had to be at least 2, otherwise
 ##  diagonals did not detect properly
-const epsilon := 2
+const epsilon:float = 2
 
 ## Creates a point collision shape which is arbitrarily small
 func create_point_collision(at:Vector2) -> CollisionShape2D:
