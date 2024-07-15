@@ -96,28 +96,41 @@ func _on_touch_input_primary_touch_event(event, longest_touched_point):
 	# Check if each point is affected by touch
 	for point in points:
 		if point.is_pressed(longest_touched_point.position):
-			
-			# Check that the point isn't already connected
-			if point.is_connected:
-				if point == connected_points[-1] || point == connected_points[-2]:
-					# Just interacting with last added point,
-					# or one before  it (which would just make a line)
-					continue
-				else:
-					# This connection completes a shape (probably)
-					complete_shape(point)
-					# Note: MUST return to avoid resetting current_line.to
-					return
-			
-			# Point is not yet connected, so just connect it
-			connect_point(point)
+			try_connect_point(point)
 			break
+	
+	# No longer want to update the line if completing the shape
+	if completing_shape: return
 	
 	# Update the current line to follow the cursor
 	if current_line != null:
 		current_line.to = longest_touched_point.position
 
+## Checks whether it's reasonable to connect a given point
+func can_connect_point(point:ConnectablePoint) -> bool:
+	# Don't connect last connected points as this would make a dot or line
+	#  (i.e. the shape needs at least 3 points)
+	if !connected_points.is_empty() && point == connected_points[-1]:
+		return false
+	if connected_points.size() >= 2 && point == connected_points[-2]:
+		return false
+	
+	return  true
+
+func try_connect_point(point:ConnectablePoint) -> bool:
+	if !can_connect_point(point):
+		return false
+	
+	connect_point(point)
+	return true
+
 func connect_point(point:ConnectablePoint):
+	
+	# If it's already connected, then we complete the shape
+	if point.is_connected:
+		complete_shape(point)
+		return
+	
 	point.is_connected = true
 	connected_points.push_back(point)
 	if current_line != null:
