@@ -74,11 +74,11 @@ func _get_bus_effect(stream_player:AudioStreamPlayer, effect:AudioEffectPitchShi
 	return effect
 
 func get_pitch_scale_for(semitones:float):
-	print_debug("\n semitones: ", semitones)
+	#print_debug("\n semitones: ", semitones)
 	# Each octave doubles (or halves) the pitch
 	# There are 12 semitones in an octave,
 	#  so each semitone multiplies by 12th root of 2
 	var pitch_scale:float = pow(twelfth_root, semitones)
-	print_debug("\n pitch_scale: ", pitch_scale)
+	#print_debug("\n pitch_scale: ", pitch_scale)
 	
 	return pitch_scale
