@@ -4,6 +4,10 @@ var points:Array[ConnectablePoint] = []
 var connected_points:Array[ConnectablePoint] = []
 var connected_lines:Array[CappedLine] = []
 
+# Collision shapes used to determine whether the next added line
+#  crosses additional points
+var point_collisions:Array[CollisionShape2D]
+
 var current_line:CappedLine = null
 
 var completing_shape := false
@@ -15,6 +19,7 @@ func _ready():
 	for child in get_children():
 		if child is ConnectablePoint:
 			points.push_back(child)
+			point_collisions.push_back(create_point_collision(child.global_position))
 
 func clear():
 	connected_points.clear()
@@ -96,28 +101,74 @@ func _on_touch_input_primary_touch_event(event, longest_touched_point):
 	# Check if each point is affected by touch
 	for point in points:
 		if point.is_pressed(longest_touched_point.position):
-			
-			# Check that the point isn't already connected
-			if point.is_connected:
-				if point == connected_points[-1] || point == connected_points[-2]:
-					# Just interacting with last added point,
-					# or one before  it (which would just make a line)
-					continue
-				else:
-					# This connection completes a shape (probably)
-					complete_shape(point)
-					# Note: MUST return to avoid resetting current_line.to
-					return
-			
-			# Point is not yet connected, so just connect it
-			connect_point(point)
+			try_connect_point(point)
 			break
+	
+	# No longer want to update the line if completing the shape
+	if completing_shape: return
 	
 	# Update the current line to follow the cursor
 	if current_line != null:
 		current_line.to = longest_touched_point.position
 
+## Checks whether it's reasonable to connect a given point
+func can_connect_point(point:ConnectablePoint) -> bool:
+	# Don't connect last connected points as this would make a dot or line
+	#  (i.e. the shape needs at least 3 points)
+	if !connected_points.is_empty() && point == connected_points[-1]:
+		return false
+	if connected_points.size() >= 2 && point == connected_points[-2]:
+		return false
+	
+	return  true
+
+func try_connect_point(point:ConnectablePoint) -> bool:
+	if !can_connect_point(point):
+		return false
+	
+	# Only forms a line if there are already points
+	if !connected_points.is_empty():
+		# From last connected point
+		var from = connected_points[-1].global_position
+		# To new point (attempting to be connected)
+		var to = point.global_position
+		var line = create_line_collision(from, to)
+		# Keep track of actual ConnectablePoints rather than the collision points
+		var hit_points := []
+		for point_collision in point_collisions:
+			if line.shape.collide(line.transform, point_collision.shape, point_collision.transform):
+				var index = point_collisions.find(point_collision)
+				hit_points.push_back(points[index])
+		
+		# In case we have multiple, sort by distance (squared for efficiency)
+		hit_points.sort_custom(
+			func(a,b):
+				return a.position.distance_squared_to(from) < b.position.distance_squared_to(from)
+		)
+		
+		# If any point can't be connected, the line cannot be drawn here
+		for hit_point in hit_points:
+			if !can_connect_point(hit_point):
+				return false
+		
+		# Connect all the points in turn
+		for hit_point in hit_points:
+			connect_point(hit_point)
+			# Make sure we stop connecting as soon as the shape is completed
+			if completing_shape:
+				return true
+	
+	# Finally, connect the actual intended point
+	connect_point(point)
+	return true
+
 func connect_point(point:ConnectablePoint):
+	
+	# If it's already connected, then we complete the shape
+	if point.is_connected:
+		complete_shape(point)
+		return
+	
 	point.is_connected = true
 	connected_points.push_back(point)
 	if current_line != null:
@@ -131,3 +182,26 @@ func add_line(from:Vector2) -> CappedLine:
 	line.owner = owner
 	line_container.add_child(line)
 	return line
+
+## Arbitrarily small value for collisions
+##  Note that this had to be at least 2, otherwise
+##  diagonals did not detect properly
+const epsilon:float = 2
+
+## Creates a point collision shape which is arbitrarily small
+func create_point_collision(at:Vector2) -> CollisionShape2D:
+	var collision = CollisionShape2D.new()
+	collision.shape = CircleShape2D.new()
+	collision.shape.radius = epsilon/2
+	collision.position = at
+	return collision
+
+## Creates a line collision shape which is arbitrarily shorter than the actual ends,
+##  so that it will not collide with any lines or points located at the ends
+func create_line_collision(from:Vector2, to:Vector2) -> CollisionShape2D:
+	var collision = CollisionShape2D.new()
+	collision.shape = SegmentShape2D.new()
+	collision.shape.a = from.move_toward(to, epsilon)
+	collision.shape.b = to.move_toward(from, epsilon)
+	return collision
+
