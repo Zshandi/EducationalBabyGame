@@ -4,6 +4,10 @@ var points:Array[ConnectablePoint] = []
 var connected_points:Array[ConnectablePoint] = []
 var connected_lines:Array[CappedLine] = []
 
+# Collision shapes used to determine whether the next added line
+#  crosses additional points
+var point_collisions:Array[CollisionShape2D]
+
 var current_line:CappedLine = null
 
 var completing_shape := false
@@ -15,6 +19,7 @@ func _ready():
 	for child in get_children():
 		if child is ConnectablePoint:
 			points.push_back(child)
+			point_collisions.push_back(create_point_collision(child.global_position))
 
 func clear():
 	connected_points.clear()
@@ -121,6 +126,26 @@ func try_connect_point(point:ConnectablePoint) -> bool:
 	if !can_connect_point(point):
 		return false
 	
+	# Only forms a line if there are already points
+	if !connected_points.is_empty():
+		var from = connected_points[-1].global_position
+		var to = point.global_position
+		var line = create_line_collision(from, to)
+		var hit_points := []
+		for point_collision in point_collisions:
+			if line.shape.collide(line.transform, point_collision.shape, point_collision.transform):
+				var index = point_collisions.find(point_collision)
+				hit_points.push_back(points[index])
+		
+		for hit_point in hit_points:
+			if !can_connect_point(hit_point):
+				return false
+		
+		for hit_point in hit_points:
+			connect_point(hit_point)
+			if completing_shape:
+				return true
+	
 	connect_point(point)
 	return true
 
@@ -144,3 +169,24 @@ func add_line(from:Vector2) -> CappedLine:
 	line.owner = owner
 	line_container.add_child(line)
 	return line
+
+## Arbitrarily small value for collisions
+const epsilon := 2
+
+## Creates a point collision shape which is arbitrarily small
+func create_point_collision(at:Vector2) -> CollisionShape2D:
+	var collision = CollisionShape2D.new()
+	collision.shape = CircleShape2D.new()
+	collision.shape.radius = epsilon/2
+	collision.position = at
+	return collision
+
+## Creates a line collision shape which is arbitrarily shorter than the actual ends,
+##  so that it will not collide with any lines or points located at the ends
+func create_line_collision(from:Vector2, to:Vector2) -> CollisionShape2D:
+	var collision = CollisionShape2D.new()
+	collision.shape = SegmentShape2D.new()
+	collision.shape.a = from.move_toward(to, epsilon)
+	collision.shape.b = to.move_toward(from, epsilon)
+	return collision
+
