@@ -139,6 +139,7 @@ func try_connect_point(point:ConnectablePoint) -> bool:
 			if line.shape.collide(line.transform, point_collision.shape, point_collision.transform):
 				var index = point_collisions.find(point_collision)
 				hit_points.push_back(points[index])
+		line.queue_free()
 		
 		# In case we have multiple, sort by distance (squared for efficiency)
 		hit_points.sort_custom(
