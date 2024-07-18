@@ -6,7 +6,7 @@ class_name CollisionShapeRes
 func _init(shape_base = null, transpos = null):
 	if shape_base is Shape2D:
 		shape = shape_base
-	elif "shape" in shape_base && shape_base.shape is Shape2D:
+	elif shape_base != null && "shape" in shape_base && shape_base.shape is Shape2D:
 		shape = shape_base.shape
 		
 		if "transform" in shape_base && shape_base.transform is Transform2D:
@@ -35,7 +35,7 @@ func collide(other) -> bool:
 	
 	if other is Shape2D:
 		other_shape = other
-	elif "shape" in other && other.shape is Shape2D && other.shape != null:
+	elif other != null && "shape" in other && other.shape is Shape2D && other.shape != null:
 		other_shape = other.shape
 		if "transform" in other && other.transform is Transform2D:
 			other_transform = other.transform
