@@ -8,7 +8,6 @@ func _init(shape_base = null, transpos = null):
 		shape = shape_base
 	elif shape_base != null && "shape" in shape_base && shape_base.shape is Shape2D:
 		shape = shape_base.shape
-		
 		if "transform" in shape_base && shape_base.transform is Transform2D:
 			transform = shape_base.transform
 	
@@ -30,16 +29,19 @@ var position:Vector2:
 		transform = transform.translated(value - transform.get_origin())
 
 func collide(other) -> bool:
-	var other_shape:Shape2D = null
-	var other_transform:Transform2D
+	other = CollisionShapeRes.new(other)
 	
-	if other is Shape2D:
-		other_shape = other
-	elif other != null && "shape" in other && other.shape is Shape2D && other.shape != null:
-		other_shape = other.shape
-		if "transform" in other && other.transform is Transform2D:
-			other_transform = other.transform
-	else:
+	if other.shape == null:
+		assert(false, "collide: invalid argument")
 		return false
 	
-	return shape.collide(transform, other_shape, other_transform)
+	return shape.collide(transform, other.shape, other.transform)
+
+func collide_and_get_contacts(other) -> PackedVector2Array:
+	other = CollisionShapeRes.new(other)
+	
+	if other.shape == null:
+		assert(false, "collide_and_get_contacts: invalid argument")
+		return []
+	
+	return shape.collide_and_get_contacts(transform, other.shape, other.transform)
