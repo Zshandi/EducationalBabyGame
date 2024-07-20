@@ -31,20 +31,39 @@ func clear():
 	for line in line_container.get_children():
 		line.queue_free()
 
-func complete_shape(point:ConnectablePoint):
+func remove_before(point_index:int):
+	if point_index < 1: return
+	
+	for i in range(0, point_index):
+		connected_points[0].is_connected = false
+		connected_points.pop_front()
+		connected_lines[0].queue_free()
+		connected_lines.pop_front()
+
+func remove_before_point(point:ConnectablePoint):
+	var index = connected_points.find(point)
+	remove_before(index)
+
+func remove_before_line(line:CappedLine):
+	var index = connected_lines.find(line)
+	remove_before(index)
+	connected_points[0].is_connected = false
+	connected_points.pop_front()
+
+func complete_shape_async(point:ConnectablePoint):
 	completing_shape = true
-	Main.instance.play_note(connected_points.size()+1)
 	
 	# Connect the current line to the point
 	current_line.to = point.global_position
 	
 	# Remove all points & lines before the one that was connected to
-	while !connected_points.is_empty() && connected_points[0] != point:
-		connected_points[0].is_connected = false
-		connected_lines[0].queue_free()
-		connected_points.pop_front()
-		connected_lines.pop_front()
+	remove_before_point(point)
 	
+	await play_completion_animation_async()
+	completing_shape = false
+
+func play_completion_animation_async():
+	Main.instance.play_note(connected_points.size()+1)
 	var tween = create_tween()
 	
 	# Hide all points
@@ -81,11 +100,9 @@ func complete_shape(point:ConnectablePoint):
 	# Wait a split second before revealing the lines again
 	# Otherwise, the lines will flash back on screen quickly
 	tween.tween_interval(0.05)
-	tween.tween_callback(
-		func ():
-			$LineContainer.self_modulate = Color.WHITE
-			completing_shape = false
-	)
+	
+	await tween.finished
+	$LineContainer.self_modulate = Color.WHITE
 
 func _on_touch_input_primary_touch_event(event, longest_touched_point):
 	
@@ -141,10 +158,8 @@ func try_connect_point(point:ConnectablePoint) -> bool:
 				hit_points.push_back(points[index])
 		
 		# In case we have multiple, sort by distance (squared for efficiency)
-		hit_points.sort_custom(
-			func(a,b):
-				return a.position.distance_squared_to(from) < b.position.distance_squared_to(from)
-		)
+		hit_points.sort_custom(func(a,b):
+			a.position.distance_squared_to(from) < b.position.distance_squared_to(from))
 		
 		# If any point can't be connected, the line cannot be drawn here
 		for hit_point in hit_points:
@@ -164,9 +179,53 @@ func try_connect_point(point:ConnectablePoint) -> bool:
 
 func connect_point(point:ConnectablePoint):
 	
+	# Check if the line created by the point crosses any other lines,
+	#  which can only happen if this is at least the third line
+	if connected_points.size() > 2:
+		var closest_line:CappedLine = null
+		# The collision should always be closer than the point
+		var closest_crossing_point := point.global_position
+		# From last connected point
+		var from := connected_points[-1].global_position
+		# To new point (attempting to be connected)
+		var to := point.global_position
+		var potential_line_collision := create_line_collision(from, to)
+		for line in connected_lines:
+			# Don't check against the line that already exists
+			if line == current_line: continue
+			var line_collision = create_line_collision(line.from, line.to)
+			var collisions:Array = potential_line_collision.collide_and_get_contacts(line_collision)
+			for collision in collisions:
+				# Use distance squared for efficiency
+				var collision_dist = collision.distance_squared_to(from)
+				var closest_dist = closest_crossing_point.distance_squared_to(from)
+				# If it's null then this is first crossing found
+				if collision_dist < closest_dist:
+					closest_crossing_point = collision
+					closest_line = line
+		
+		# Found a crossing line, then set that lines start, this lines end, and complete the shape
+		if closest_line != null:
+			completing_shape = true
+			
+			var async = func():
+				# Connect the current line to the crossing point
+				current_line.to = closest_crossing_point
+				
+				# Have the crossed line start at the crossing point
+				closest_line.from = closest_crossing_point
+				
+				# Remove all points & lines before the line that was connected to
+				remove_before_line(closest_line)
+				
+				await play_completion_animation_async()
+				completing_shape = false
+			async.call()
+			return
+	
 	# If it's already connected, then we complete the shape
 	if point.is_connected:
-		complete_shape(point)
+		complete_shape_async(point)
 		return
 	
 	point.is_connected = true
@@ -204,4 +263,3 @@ func create_line_collision(from:Vector2, to:Vector2) -> CollisionShapeRes:
 	collision.shape.a = from.move_toward(to, epsilon)
 	collision.shape.b = to.move_toward(from, epsilon)
 	return collision
-
