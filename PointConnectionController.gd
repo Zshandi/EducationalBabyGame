@@ -21,6 +21,22 @@ func _ready():
 			points.push_back(child)
 			point_collisions.push_back(create_point_collision(child.global_position))
 
+var debug_point
+var debug_line_from
+var debug_line_to
+var debug_line_from2
+var debug_line_to2
+func _process(delta):
+	queue_redraw()
+func _draw():
+	if debug_line_from != null && debug_line_to != null:
+		draw_line(debug_line_from, debug_line_to, Color.CORNFLOWER_BLUE, 5)
+	if debug_line_from2 != null && debug_line_to2 != null:
+		draw_line(debug_line_from2, debug_line_to2, Color.CRIMSON, 5)
+	if debug_point != null:
+		draw_circle(debug_point, 3, Color.CHARTREUSE)
+	
+
 func clear():
 	connected_points.clear()
 	for point in points:
@@ -190,6 +206,8 @@ func connect_point(point:ConnectablePoint):
 		# To new point (attempting to be connected)
 		var to := point.global_position
 		var potential_line_collision := create_line_collision(from, to)
+		debug_line_from = potential_line_collision.shape.a
+		debug_line_to = potential_line_collision.shape.b
 		for line in connected_lines:
 			# Don't check against the line that already exists
 			if line == current_line: continue
@@ -203,6 +221,9 @@ func connect_point(point:ConnectablePoint):
 				if collision_dist < closest_dist:
 					closest_crossing_point = collision
 					closest_line = line
+					debug_point = collision
+					debug_line_from2 = line_collision.shape.a
+					debug_line_to2 = line_collision.shape.b
 		
 		# Found a crossing line, then set that lines start, this lines end, and complete the shape
 		if closest_line != null:
