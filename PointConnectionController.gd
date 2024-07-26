@@ -27,7 +27,8 @@ var debug_line_to
 var debug_line_from2
 var debug_line_to2
 func _process(delta):
-	queue_redraw()
+	if OS.is_debug_build():
+		queue_redraw()
 func _draw():
 	if debug_line_from != null && debug_line_to != null:
 		draw_line(debug_line_from, debug_line_to, Color.CORNFLOWER_BLUE, 5)
@@ -259,7 +260,7 @@ func connect_point(point:ConnectablePoint):
 
 func add_line(from:Vector2) -> CappedLine:
 	var line = CappedLine.create(from, Vector2.ZERO, 30, Color.WHITE, true)
-	line.owner = owner
+	line.owner = self
 	line_container.add_child(line)
 	return line
 

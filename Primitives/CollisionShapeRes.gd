@@ -43,5 +43,7 @@ func collide_and_get_contacts(other) -> PackedVector2Array:
 	if other.shape == null:
 		assert(false, "collide_and_get_contacts: invalid argument")
 		return []
-	
-	return shape.collide_and_get_contacts(transform, other.shape, other.transform)
+	var collision = shape.collide_and_get_contacts(transform, other.shape, other.transform)
+	#if !collision.is_empty():
+		#print_debug("transform = ", transform, ", other.shape = ", other.shape, ", other.transform = ", other.transform)
+	return collision
